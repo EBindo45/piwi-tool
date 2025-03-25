@@ -7,6 +7,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
+      background-color: #f4f4f4;
+      color: #2e2e2e;
+    
       font-family: 'Inter', sans-serif;
       margin: 2rem;
       background: #f3f8f4;
@@ -63,30 +66,28 @@
     .card p {
       margin: 0.25rem 0;
     }
+    
+    .filter-box {
+      background-color: #ffffff;
+      border-radius: 16px;
+      padding: 1rem 1.5rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      margin-bottom: 2rem;
+    }
     @keyframes fadeIn {
+
       to { opacity: 1; }
     }
-  
-    .export-button {
-      padding: 0.6rem 1.2rem;
-      font-size: 1rem;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      margin-bottom: 2rem;
-      transition: background-color 0.3s;
-    }
-    .export-button:hover {
-      background-color: #43a047;
-    }
-    </style>
-    
+  </style>
 </head>
 <body>
-  <h1>Filtra le varietà PIWI</h1>
-  <div class="filters">
+  
+    <header style="text-align:center; margin-bottom:2rem;">
+      <h1 style="font-size:2.5rem; margin: 0; color:#2e7d32;">🍇 Seleziona la tua varietà PIWI</h1>
+      <p style="font-size:1.1rem; color:#4b4b4b;">Filtra per colore, origine, malattie e caratteristiche 🌿</p>
+    </header>
+    
+  <div class="filter-box filters">
     <select id="filter-colore">
       <option value="">Tutti i colori</option>
     </select>
@@ -98,10 +99,7 @@
     </select>
     <input type="text" id="search" placeholder="Cerca per nome o caratteristiche" />
   </div>
-  
-    <button class="export-button" onclick="exportToCSV()">Esporta risultati</button>
-    <div class="results" id="results"></div>
-    
+  <div class="results" id="results"></div>
 
   <script>
     const data = [
@@ -372,22 +370,6 @@
 
     populateFilters();
     filterData();
-  
-    function exportToCSV() {
-      if (!filteredData.length) return;
-      const headers = Object.keys(filteredData[0]).join(",");
-      const rows = filteredData.map(obj =>
-        Object.values(obj).map(val => `"${val ? val.toString().replace(/"/g, '""') : ""}"`).join(",")
-      );
-      const csvContent = [headers, ...rows].join("\n");
-
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "varieta_piwi_filtrate.csv";
-      link.click();
-    }
-    </script>
-    
+  </script>
 </body>
 </html>
