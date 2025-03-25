@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Selettore Varietà PIWI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 2rem;
+      background: #f3f8f4;
+      color: #333;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      color: #2e7d32;
+    }
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    select, input {
+      padding: 0.6rem 1rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      background-color: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      transition: border 0.3s, transform 0.2s;
+    }
+    select:focus, input:focus {
+      border-color: #4CAF50;
+      outline: none;
+      transform: scale(1.02);
+    }
+    .results {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      opacity: 0;
+      animation: fadeIn 0.5s ease forwards;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+    .card h3 {
+      margin-top: 0;
+      color: #2e7d32;
+      font-size: 1.25rem;
+    }
+    .card p {
+      margin: 0.25rem 0;
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+  
+    .export-button {
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-bottom: 2rem;
+      transition: background-color 0.3s;
+    }
+    .export-button:hover {
+      background-color: #43a047;
+    }
+    </style>
+    
+</head>
+<body>
+  <h1>Filtra le varietà PIWI</h1>
+  <div class="filters">
+    <select id="filter-colore">
+      <option value="">Tutti i colori</option>
+    </select>
+    <select id="filter-origine">
+      <option value="">Tutte le origini</option>
+    </select>
+    <select id="filter-malattie">
+      <option value="">Tutte le malattie</option>
+    </select>
+    <input type="text" id="search" placeholder="Cerca per nome o caratteristiche" />
+  </div>
+  
+    <button class="export-button" onclick="exportToCSV()">Esporta risultati</button>
+    <div class="results" id="results"></div>
+    
+
+  <script>
+    const data = [
+  {
+    "Varietà": "Solaris",
+    "Colore Uva": "Bianco",
+    "Origine": "Germania",
+    "Caratteristiche": "Vitigno precoce, aromi fruttati",
+    "Tecniche Enologiche": "Fermentazione a bassa temperatura, affinamento in acciaio",
+    "Immagine": NaN,
+    "Malattie": "Oidio, Peronospora"
+  },
+  {
+    "Varietà": "Bronner",
+    "Colore Uva": "Bianco",
+    "Origine": "Germania",
+    "Caratteristiche": "Fresco, note di mela verde e agrumi",
+    "Tecniche Enologiche": "Vinificazione in riduzione, breve affinamento sui lieviti",
+    "Immagine": NaN,
+    "Malattie": "Oidio, Peronospora"
+  },
+  {
+    "Varietà": "Souvignier Gris",
+    "Colore Uva": "Bianco",
+    "Origine": "Germania",
+    "Caratteristiche": "Corposo, fruttato, note di frutta matura",
+    "Tecniche Enologiche": "Macerazione pellicolare a freddo, fermentazione in barrique",
+    "Immagine": NaN,
+    "Malattie": "Oidio, Peronospora"
+  },
+  {
+    "Varietà": "Johanniter",
+    "Colore Uva": "Bianco",
+    "Origine": "Germania",
+    "Caratteristiche": "Equilibrato, note di mela e fiori",
+    "Tecniche Enologiche": "Fermentazione a temperatura controllata",
+    "Immagine": NaN,
+    "Malattie": "Oidio, Peronospora"
+  },
+  {
+    "Varietà": "Cabernet Cortis",
+    "Colore Uva": "Rosso",
+    "Origine": "Germania",
+    "Caratteristiche": "Strutturato, speziato, tannini morbidi",
+    "Tecniche Enologiche": "Macerazione prolungata, affinamento in barrique",
+    "Immagine": NaN,
+    "Malattie": "Oidio, Peronospora"
+  },
+  {
+    "Varietà": "Muscaris",
+    "Colore Uva": "Bianco",
+    "Origine": "Germania",
+    "Caratteristiche": "Aromatico, note di muscat e agrumi",
+    "Tecniche Enologiche": "Fermentazione a bassa temperatura, affinamento in acciaio",
+    "Immagine": NaN,
+    "Malattie": "Oidio, Peronospora"
+  },
+  {
+    "Varietà": "Regent",
+    "Colore Uva": "Rosso",
+    "Origine": "Germania",
+    "Caratteristiche": "Corposo, fruttato, note di frutti di bosco",
+    "Tecniche Enologiche": "Macerazione breve, affinamento in acciaio o legno usato",
+    "Immagine": NaN,
+    "Malattie": "Oidio, Peronospora"
+  },
+  {
+    "Varietà": "Cabernet Blanc",
+    "Colore Uva": "Bianco",
+    "Origine": "Svizzera",
+    "Caratteristiche": "Elegante, fresco, note erbacee",
+    "Tecniche Enologiche": "Fermentazione a temperatura controllata, affinamento sui lieviti",
+    "Immagine": NaN,
+    "Malattie": "Oidio, Peronospora"
+  },
+  {
+    "Varietà": "Pinotin",
+    "Colore Uva": "Rosso",
+    "Origine": "Svizzera",
+    "Caratteristiche": "Fruttato, morbido, note di ciliegia",
+    "Tecniche Enologiche": "Macerazione carbonica, affinamento in acciaio",
+    "Immagine": NaN,
+    "Malattie": "Oidio, Peronospora"
+  },
+  {
+    "Varietà": "Felicia",
+    "Colore Uva": "Bianco",
+    "Origine": "Germania",
+    "Caratteristiche": "Fresco, minerale, note di agrumi e fiori bianchi",
+    "Tecniche Enologiche": "Fermentazione a bassa temperatura, affinamento in acciaio",
+    "Immagine": NaN,
+    "Malattie": "Oidio, Peronospora"
+  },
+  {
+    "Varietà": "Helios",
+    "Colore Uva": "Bianco",
+    "Origine": "Germania",
+    "Caratteristiche": "Fresco, note di agrumi e buona acidità",
+    "Tecniche Enologiche": "Fermentazione in acciaio, affinamento sui lieviti",
+    "Immagine": NaN,
+    "Malattie": "Oidio, Peronospora"
+  },
+  {
+    "Varietà": "Cabernet Carbon",
+    "Colore Uva": "Rosso",
+    "Origine": "Germania",
+    "Caratteristiche": "Strutturato, frutti di bosco e spezie",
+    "Tecniche Enologiche": "Macerazione prolungata, affinamento in barrique",
+    "Immagine": NaN,
+    "Malattie": "Oidio, Peronospora"
+  },
+  {
+    "Varietà": "Prior",
+    "Colore Uva": "Rosso",
+    "Origine": "Germania",
+    "Caratteristiche": "Strutturato, tannini presenti, buona longevità",
+    "Tecniche Enologiche": "Fermentazione con follature frequenti, affinamento in legno",
+    "Immagine": NaN,
+    "Malattie": "Oidio, Peronospora"
+  },
+  {
+    "Varietà": "Fleurtai",
+    "Colore Uva": "Bianco",
+    "Origine": "Italia",
+    "Caratteristiche": "Floreale e fruttato",
+    "Tecniche Enologiche": "Fermentazione a temperatura controllata, affinamento in acciaio",
+    "Immagine": NaN,
+    "Malattie": "Oidio, Peronospora"
+  },
+  {
+    "Varietà": "Soreli",
+    "Colore Uva": "Bianco",
+    "Origine": "Italia",
+    "Caratteristiche": "Fresco e aromatico",
+    "Tecniche Enologiche": "Fermentazione in acciaio, breve macerazione pellicolare",
+    "Immagine": NaN,
+    "Malattie": "Oidio, Peronospora"
+  },
+  {
+    "Varietà": "Sauvignon Kretos",
+    "Colore Uva": "Bianco",
+    "Origine": "Italia",
+    "Caratteristiche": "Aromatico, con tipiche note varietali",
+    "Tecniche Enologiche": "Fermentazione a bassa temperatura, utilizzo di lieviti selezionati",
+    "Immagine": NaN,
+    "Malattie": "Oidio, Peronospora"
+  },
+  {
+    "Varietà": "Sauvignon Nepis",
+    "Colore Uva": "Bianco",
+    "Origine": "Italia",
+    "Caratteristiche": "Aromatico e fresco",
+    "Tecniche Enologiche": "Fermentazione in acciaio, affinamento sui lieviti",
+    "Immagine": NaN,
+    "Malattie": "Oidio, Peronospora"
+  },
+  {
+    "Varietà": "Merlot Khorus",
+    "Colore Uva": "Rosso",
+    "Origine": "Italia",
+    "Caratteristiche": "Strutturato, frutti rossi",
+    "Tecniche Enologiche": "Macerazione tradizionale, affinamento in barrique",
+    "Immagine": NaN,
+    "Malattie": "Oidio, Peronospora"
+  },
+  {
+    "Varietà": "Merlot Kanthus",
+    "Colore Uva": "Rosso",
+    "Origine": "Italia",
+    "Caratteristiche": "Morbido, tannini equilibrati",
+    "Tecniche Enologiche": "Macerazione breve, affinamento in acciaio o legno usato",
+    "Immagine": NaN,
+    "Malattie": "Oidio, Peronospora"
+  },
+  {
+    "Varietà": "Cabernet Volos",
+    "Colore Uva": "Rosso",
+    "Origine": "Italia",
+    "Caratteristiche": "Speziato e fruttato",
+    "Tecniche Enologiche": "Fermentazione con lunga macerazione, affinamento in barrique",
+    "Immagine": NaN,
+    "Malattie": "Oidio, Peronospora"
+  }
+];
+    let filteredData = [];
+
+    function populateFilters() {
+      const coloreSet = new Set();
+      const origineSet = new Set();
+      const malattieSet = new Set();
+      data.forEach(item => {
+        if (item["Colore Uva"]) coloreSet.add(item["Colore Uva"]);
+        if (item["Origine"]) origineSet.add(item["Origine"]);
+        if (item["Malattie"]) {
+          item["Malattie"].split(",").forEach(m => malattieSet.add(m.trim()));
+        }
+      });
+
+      const coloreSelect = document.getElementById("filter-colore");
+      [...coloreSet].sort().forEach(opt => {
+        const el = document.createElement("option");
+        el.value = opt;
+        el.textContent = opt;
+        coloreSelect.appendChild(el);
+      });
+
+      const origineSelect = document.getElementById("filter-origine");
+      [...origineSet].sort().forEach(opt => {
+        const el = document.createElement("option");
+        el.value = opt;
+        el.textContent = opt;
+        origineSelect.appendChild(el);
+      });
+
+      const malattieSelect = document.getElementById("filter-malattie");
+      [...malattieSet].sort().forEach(opt => {
+        const el = document.createElement("option");
+        el.value = opt;
+        el.textContent = opt;
+        malattieSelect.appendChild(el);
+      });
+    }
+
+    function filterData() {
+      const colore = document.getElementById("filter-colore").value;
+      const origine = document.getElementById("filter-origine").value;
+      const malattia = document.getElementById("filter-malattie").value;
+      const search = document.getElementById("search").value.toLowerCase();
+
+      filteredData = data.filter(item => {
+        const matchColore = !colore || item["Colore Uva"] === colore;
+        const matchOrigine = !origine || item["Origine"] === origine;
+        const matchMalattia = !malattia || (item["Malattie"] && item["Malattie"].includes(malattia));
+        const matchSearch =
+          item["Varietà"].toLowerCase().includes(search) ||
+          item["Caratteristiche"].toLowerCase().includes(search);
+        return matchColore && matchOrigine && matchMalattia && matchSearch;
+      });
+      renderResults(filteredData);
+    }
+
+    function renderResults(list) {
+      const container = document.getElementById("results");
+      container.innerHTML = "";
+      if (list.length === 0) {
+        container.innerHTML = "<p>Nessun risultato trovato.</p>";
+        return;
+      }
+      list.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "card";
+        div.innerHTML = `
+          <h3>${item["Varietà"]}</h3>
+          <p><strong>Colore:</strong> ${item["Colore Uva"]}</p>
+          <p><strong>Origine:</strong> ${item["Origine"]}</p>
+          <p><strong>Malattie:</strong> ${item["Malattie"]}</p>
+          <p><strong>Caratteristiche:</strong> ${item["Caratteristiche"]}</p>
+          <p><strong>Tecniche:</strong> ${item["Tecniche Enologiche"]}</p>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    document.getElementById("filter-colore").addEventListener("change", filterData);
+    document.getElementById("filter-origine").addEventListener("change", filterData);
+    document.getElementById("filter-malattie").addEventListener("change", filterData);
+    document.getElementById("search").addEventListener("input", filterData);
+
+    populateFilters();
+    filterData();
+  
+    function exportToCSV() {
+      if (!filteredData.length) return;
+      const headers = Object.keys(filteredData[0]).join(",");
+      const rows = filteredData.map(obj =>
+        Object.values(obj).map(val => `"${val ? val.toString().replace(/"/g, '""') : ""}"`).join(",")
+      );
+      const csvContent = [headers, ...rows].join("\n");
+
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "varieta_piwi_filtrate.csv";
+      link.click();
+    }
+    </script>
+    
+</body>
+</html>
